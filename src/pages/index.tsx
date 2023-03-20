@@ -7,8 +7,24 @@ import { getSession, signOut } from 'next-auth/react'
 import { NextPageContext } from 'next'
 import useCurrentUser from '@/hooks/useCurrentUser'
 import Layout from '@/components/layout'
+import { useEffect, useRef } from 'react'
+import Banner from '@/components/banner'
+import ProductFeed from '@/components/productFeed'
 
 const inter = Inter({ subsets: ['latin'] })
+
+type ProductType = {
+  id: number,
+  title: string,
+  price: number,
+  description: string,
+  category: string,
+  image: string,
+  rating: {
+    rate: number,
+    count: number
+  }
+}
 
 export async function getServerSideProps(context: NextPageContext) {
   const session = await getSession(context);
@@ -22,14 +38,30 @@ export async function getServerSideProps(context: NextPageContext) {
     }
   }
 
+  let products = []
+  try {
+    products = await fetch('https://fakestoreapi.com/products').then(res => res.json())
+    // const data = await fetch('https://api.storerestapi.com/products')
+
+    console.log(products)
+  } catch (error) {
+    console.log(error)
+  }finally{
+    return {
+      props:{products}
+    }
+  }
+
   return {
-    props: {}
+    props: { products }
   }
 }
 
-export default function Home() {
+export default function Home({ products }: { products: ProductType[] }) {
 
   const { data: user } = useCurrentUser();
+
+
 
   return (
     <>
@@ -42,12 +74,18 @@ export default function Home() {
       <main>
 
         <Layout>
-          <div>
+          {/* <div>
           <p>logged in as : {user?.email}</p>
           <button onClick={() => signOut()}>Sign out</button>
+          </div> */}
+          <div className='bg-gray-200 min-h-screen'>
+            <Banner />
+            <ProductFeed products={products} />
           </div>
         </Layout>
       </main>
     </>
   )
 }
+
+

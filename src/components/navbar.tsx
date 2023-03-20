@@ -27,7 +27,7 @@ const Navbar: React.FC = () => {
                 <h1 className="text-pink-500 font-bold text-5xl font-mono">Cart-Cart</h1>
 
 
-                <ul className="text-zinc-500 font-semibold text-2xl flex flex-row w-3/12 justify-around ">
+                <ul className="text-zinc-400 font-semibold text-2xl flex flex-row w-3/12 justify-around ">
 
                     <li onClick={() => { router.push({ pathname: "/" }) }} className="hover:text-zinc-200 hover:cursor-pointer transition duration-150 h-full border-pink-500" style={activeRoute === "/" ? { borderBottomWidth: "4px", color: "aqua" } : {}}>Home</li>
                     <li onClick={() => { router.push({ pathname: "/cart" }) }} className="hover:text-zinc-200 hover:cursor-pointer  transition duration-150  border-pink-500 " style={activeRoute === "/cart" ? { borderBottomWidth: "4px", color: "aqua" } : {}}>Cart</li>
@@ -51,7 +51,7 @@ const Navbar: React.FC = () => {
                                 " placeholder="search" />
                     <HiX size={30} className="text-zinc-300 hover:scale-110 transform transition duration-200 cursor-pointer" />
                 </div>
-                <div onClick={() => setIsShowLogButton(prev => !prev)} className="flex flex-col items-center text-zinc-500 text-2xl font-semibold hover:text-zinc-200 hover:cursor-pointer transition duration-150" >
+                <div onClick={() => setIsShowLogButton(prev => !prev)} className="flex flex-col items-center text-zinc-400 text-2xl font-semibold hover:text-zinc-200 hover:cursor-pointer transition duration-150" >
 
                     <BiUserCircle size={60} className="" />
                     <p>Profile</p>
@@ -59,10 +59,10 @@ const Navbar: React.FC = () => {
             </div>
 
         </div>
-        <div className="flex justify-end pr-3 h-14">
+        {/* <div className="flex justify-end pr-3 h-14 bg-gray-200">
         <button className="px-8 py-3 mt-2 rounded-md  font-semibold text-lg font-mono bg-zinc-400" style={{  background: "aqua", display: isShowLogButton ? "" : "none" }}>Login</button>
 
-        </div>
+        </div> */}
    
 
     </>
