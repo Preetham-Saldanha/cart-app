@@ -7,17 +7,17 @@ import axios from 'axios';
 import { useEffect } from 'react'
 
 type ProductType = {
-    id: number,
+    id: string,
     title: string,
     price: number,
-    description: string,
-    category: string,
+    description: string | null,
+    category: string | null,
     image: string,
     rating: {
-        rate: number,
-        count: number
+      rate: number,
+      count: number
     }
-}
+  }
 
 // address
 // : 
@@ -51,12 +51,12 @@ function Product({ id, title, price, description, category, image, rating: { rat
 
 
     const { data: user } = useCurrentUser();
-    console.log(user)
+    console.log("userId",user?.id)
 
     const addToCart = async () => {
         try {
             const result = await axios.post("/api/addtocart", { productId: id, userId: user.id, quantity: 1, title, price, description, category, image, rate, count })
-            console.log(result)
+            console.log("product added to cart",result)
         }
         catch (error) {
             console.log(error);
@@ -94,12 +94,12 @@ function Product({ id, title, price, description, category, image, rating: { rat
     //     }
     // }, [])
 
-    
+    const imageUrl= "/images/productImages/" + image;
 
     return (
         <div className='flex flex-col  px-5  m-5 bg-white py-4 rounded-md'>
             <p className='w-full text-right font-semibold text-gray-500'>{category}</p>
-            <div className='m-auto h-5/12'>  <Image src={image} height={200} width={200} alt={"non empty"} /></div>
+            <div className='m-auto h-5/12'>  <Image src={imageUrl} height={200} width={200} alt={"non empty"} /></div>
 
             <div className=''>
                 <p className='font-bold text-lg my-2'>{title}</p>

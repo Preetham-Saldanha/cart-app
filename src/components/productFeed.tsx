@@ -3,22 +3,19 @@ import React, { useEffect } from 'react';
 import Product from './product';
 
 type ProductType = {
-    id: number,
+    id: string,
     title: string,
     price: number,
-    description: string,
-    category: string,
+    description: string | null,
+    category: string | null,
     image: string,
     rating: {
-        rate: number,
-        count: number
+      rate: number,
+      count: number
     }
-}
+  }
 
 function ProductFeed({ products }: { products: ProductType[] }) {
-
-
-
 
     return (
         <div className='relative grid grid-flow-dense md:grid-cols-2 lg:grid-cols-4 md:-mt-32 z-30 w-5/6 m-auto'>

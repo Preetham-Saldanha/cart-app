@@ -10,20 +10,25 @@ import Layout from '@/components/layout'
 import { useEffect, useRef } from 'react'
 import Banner from '@/components/banner'
 import ProductFeed from '@/components/productFeed'
+import prismadb from '../lib/prismadb'
 
 const inter = Inter({ subsets: ['latin'] })
 
 type ProductType = {
-  id: number,
+  id: string,
   title: string,
   price: number,
-  description: string,
-  category: string,
+  description: string | null,
+  category: string | null,
   image: string,
   rating: {
     rate: number,
     count: number
   }
+}
+type RatingType = {
+  rate: number,
+  count: number
 }
 
 export async function getServerSideProps(context: NextPageContext) {
@@ -38,23 +43,25 @@ export async function getServerSideProps(context: NextPageContext) {
     }
   }
 
-  let products = []
+  let products: (ProductType & { rating: RatingType; })[] = []
   try {
-    products = await fetch('https://fakestoreapi.com/products').then(res => res.json())
+    // products = await fetch('https://fakestoreapi.com/products').then(res => res.json())
     // const data = await fetch('https://api.storerestapi.com/products')
-
-    console.log(products)
+    products = await prismadb.product.findMany({
+      include: {
+        rating: true
+      }
+    })
+    console.log(products.length)
   } catch (error) {
     console.log(error)
-  }finally{
+  } finally {
     return {
-      props:{products}
+      props: { products }
     }
   }
 
-  return {
-    props: { products }
-  }
+ 
 }
 
 export default function Home({ products }: { products: ProductType[] }) {

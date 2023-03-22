@@ -4,6 +4,12 @@ const nextConfig = {
   images: {
     domains: ['fakestoreapi.com'],
   },
+  // webpack5: true,
+  webpack: (config) => {
+    config.resolve.fallback = { fs: false };
+
+    return config;
+  },
   // images: {
   //   remotePatterns: [
   //     {
