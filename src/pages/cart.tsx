@@ -5,10 +5,13 @@ import TotalCostContainer from '@/components/totalCostContainer';
 import useCurrentUser from '@/hooks/useCurrentUser'
 import { NextPageContext } from 'next';
 import { getSession } from 'next-auth/react';
-import React from 'react'
+import React,{useState, useEffect} from 'react'
 import prismadb from "../lib/prismadb"
-// import useSWR from 'swr'
-// import fetcher from '@/lib/fetcher';
+import useSWR from 'swr'
+import fetcher from '@/lib/fetcher';
+import useTotalAmount from "@/hooks/useTotalAmount";
+import useFirstCartRender from "@/hooks/useFirstCartRender"
+import useLatestItems from "@/hooks/useLatestItems"
 
 type CartItem = {
   id: string, quantity: number,
@@ -21,11 +24,41 @@ type CartItem = {
     image: string,
     ratingId: number
   }
+  , productId:string
 }
 
 function Cart() {
 
   const { data: user } = useCurrentUser();
+
+  
+  const { isFirstRender, setIsFirstRender } = useFirstCartRender()
+  const { totalAmount, setTotalAmount } = useTotalAmount();
+  const { data, error, isLoading, mutate }: { data: { items: CartItem[] }, error: any, isLoading: any, mutate: any } = useSWR('api/getcartitems', fetcher)
+  const { latestItems, setLatestModifiedItems } = useLatestItems();
+
+  // console.log("runss", data?.items)
+// console.log(isFirstRender,"First rendeer")
+  useEffect(()=>{
+  // mutate()
+  console.log("data mutattion", data, isFirstRender)
+
+  if (!isLoading && isFirstRender) {
+      let initialSum = data?.items?.reduce((acc, item) => acc + Math.floor(80 * item.product.price), 0)
+      let initialModifiedItems: any = {}
+      data?.items?.forEach(item => initialModifiedItems[item.productId] = item.quantity)
+      // console.log(initialSum)
+      console.log("initial obj", initialModifiedItems)
+      setLatestModifiedItems(initialModifiedItems);
+      console.log(initialSum)
+      setTotalAmount(initialSum)
+      setIsFirstRender(false)
+
+  }
+
+},[isLoading,isFirstRender]
+  )
+
 
 
   // console.log(data)
@@ -34,8 +67,8 @@ function Cart() {
     <Layout>
       <div className='bg-gray-300 min-h-screen'>
         <div className='flex  w-10/12 m-auto gap-5  p-8 '>
-          <CartContainer  />
-          <TotalCostContainer />
+          <CartContainer  isLoading={isLoading} items={data?.items} mutate={mutate}/>
+          <TotalCostContainer noOfItems={data?.items?.length} isLoading={isLoading}/>
         </div>
       </div>
     </Layout>

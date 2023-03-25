@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import CartItem from './cartItem'
 import useSWR from 'swr'
 import fetcher from '@/lib/fetcher';
 import useCurrentUser from '@/hooks/useCurrentUser';
+import useTotalAmount from "@/hooks/useTotalAmount";
+import useFirstCartRender from "@/hooks/useFirstCartRender"
+import useLatestItems from "@/hooks/useLatestItems"
+// import Product from './product';
 // import prismadb from "@/lib/prismadb"
 // import { Product } from '@prisma/client';
+
+
 
 type CartItem = {
     id: string, quantity: number,
@@ -17,34 +23,38 @@ type CartItem = {
         image: string,
         ratingId: number
     }
+    productId:string
 }
 
-function CartContainer() {
-// {items}: {items:CartItem[]}
+
+
+function CartContainer({ items, mutate, isLoading }: { items: CartItem[], mutate: any, isLoading: boolean }) {
+
     const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
-    // const [items, setItems] = useState<CartItem[]>([])
+    // const [isFirstRender, setIsFirstRender] = useState<boolean>(true);
+    const { isFirstRender, setIsFirstRender } = useFirstCartRender()
+    const { totalAmount, setTotalAmount } = useTotalAmount();
+
+    const { latestItems, setLatestModifiedItems } = useLatestItems();
+    // contains items whose id is mapped to quantity
+
+
+
     function handleSelectAll() {
         setIsSelectAll(prev => !prev)
     }
+    // console.log("initial", items)
 
-    const { data: user } = useCurrentUser()
 
-    // async function getItems() {
-    //     const result = await prismadb.cartItem.findMany({
-    //         where: { id: user.id }
-    //     })
-    //     console.log(result,"result")
-    //     // setItems(result)
-    // }
+    useEffect(() => {
 
-    // useEffect(() => {
-    //     getItems()
-    // }, [])
 
-    const { data , error, isLoading ,mutate }: { data: {items:CartItem[]}, error: any, isLoading: any , mutate:any} = useSWR('api/getcartitems', fetcher)
-// console.log(error)
+    }, [isLoading, isFirstRender])
 
-    console.log(data?.items)
+
+
+
+    // console.log(items)
     return (
         <div className='bg-white w-8/12 rounded-md p-5'>
 
@@ -61,17 +71,18 @@ function CartContainer() {
                 <p className='text-right pr-4 text-base w-full text-gray-600 font-medium'>Price</p>
             </div>
 
-            {data?.items?.map(item => <CartItem key={item.id} mutate={mutate}
+            {items?.map(item => <CartItem key={item.id} mutate={mutate}
                 id={item.id} category={item.product.category}
                 description={item.product.description}
                 image={item.product.image} price={item.product.price}
                 quantity={item.quantity}
                 ratingId={item.product.ratingId} title={item.product.title}
-
+                setLatestModifiedItems={setLatestModifiedItems}
+                productId={item.productId}
             />)}
 
             <div className='text-right text-xl py-2 pr-4 '>
-                Subtotal (5 items):  <span className='font-medium'>₹899</span>
+                Subtotal ({items?.length} items): <span className='font-medium'>₹{totalAmount}</span>
             </div>
         </div>
     )

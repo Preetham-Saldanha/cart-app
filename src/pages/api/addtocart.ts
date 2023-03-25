@@ -71,18 +71,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 
     // create a new cart item with the new product object
+
+    const presentStatus = await prismadb.cartItem.findFirst({
+      where: {
+        productId: productId
+
+      }
+    })
+
+// console.log()
+    if (presentStatus ) {
+      return res.status(200).json(null)
+    } else{
     const result = await prismadb.cartItem.create({
       data: {
         userId: userId,
         quantity: quantity,
 
-        product: {connect:{
-          id:productId
-        }},
+        product: {
+          connect: {
+            id: productId
+          }
+        },
       },
     });
+    console.log(result)
 
-    return res.status(200).json({result})
+    return res.status(200).json({ result })
+  }
   } catch (error) {
     console.log(error);
     return res.status(400).end();

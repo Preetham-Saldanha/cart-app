@@ -18,7 +18,7 @@ type ProductType = {
 function ProductFeed({ products }: { products: ProductType[] }) {
 
     return (
-        <div className='relative grid grid-flow-dense md:grid-cols-2 lg:grid-cols-4 md:-mt-32 z-30 w-5/6 m-auto'>
+        <div className='relative grid grid-flow-dense md:grid-cols-2 lg:grid-cols-3 md:-mt-32 z-30 w-5/6 m-auto'>
             {products?.map(product =>
                 <Product key={product.id} title={product.title}
                     id={product.id} description={product.description}

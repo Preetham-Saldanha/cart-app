@@ -5,6 +5,10 @@ import { BsStarHalf, BsStarFill, BsStar } from "react-icons/bs";
 import useCurrentUser from '@/hooks/useCurrentUser'
 import axios from 'axios';
 import { useEffect } from 'react'
+import useFirstCartRender from "@/hooks/useFirstCartRender"
+import useLatestItems from "@/hooks/useLatestItems"
+import useTotalAmount from "@/hooks/useTotalAmount";
+
 
 type ProductType = {
     id: string,
@@ -51,12 +55,27 @@ function Product({ id, title, price, description, category, image, rating: { rat
 
 
     const { data: user } = useCurrentUser();
+    const { isFirstRender, setIsFirstRender } = useFirstCartRender()
+    const { latestItems, setLatestModifiedItems } = useLatestItems();
+    const { totalAmount, setTotalAmount } : { totalAmount: number, setTotalAmount: React.Dispatch<React.SetStateAction<number>> } = useTotalAmount();
+
     console.log("userId",user?.id)
 
     const addToCart = async () => {
         try {
+
             const result = await axios.post("/api/addtocart", { productId: id, userId: user.id, quantity: 1, title, price, description, category, image, rate, count })
             console.log("product added to cart",result)
+
+            if(result.data ===null){
+                //display modal to OKAY or move to cart
+               return
+            }
+            console.log({...latestItems,[id]:1})
+            setLatestModifiedItems({...latestItems,[id]:1})
+            setTotalAmount(prev=>prev+Math.floor(price*80))
+            
+            // setIsFirstRender(true)
         }
         catch (error) {
             console.log(error);

@@ -7,6 +7,9 @@ import { RiDeleteBinLine } from 'react-icons/ri'
 import { GiCheckMark } from 'react-icons/gi'
 import { ImCheckboxUnchecked, ImCheckboxChecked } from 'react-icons/im'
 import axios from 'axios'
+import useTotalAmount from "@/hooks/useTotalAmount";
+import useFirstCartRender from "@/hooks/useFirstCartRender"
+import useLatestItems from "@/hooks/useLatestItems"
 // import prismadb from '@/lib/prismadb'
 // import { PrismaClient } from '@prisma/client'
 // {
@@ -25,19 +28,26 @@ import axios from 'axios'
 //     }
 //   }
 
-function CartItem({ id, quantity, title, price, image, description, category, ratingId, mutate }: {
+function CartItem({ id, quantity, title, price, image, description, category, ratingId, mutate, productId  }: {
     id: string, quantity: number, title: string,
     price: number,
     description: string | null,
     category: string | null,
     image: string,
     ratingId: number,
-    mutate: () => any
+    mutate: () => any,
+    productId: string,
+    setLatestModifiedItems?: React.Dispatch<React.SetStateAction<{
+        id: number;
+    } | undefined>>
 }) {
 
-    const [noItemsSelected, setNoOfItemsSelected] = useState<number>(quantity)
+    // const [noItemsSelected, setNoOfItemsSelected] = useState<number>(quantity)
     const [isSelected, SetIsSelected] = useState<boolean>(true)
     const [hasGift, setHasGift] = useState<boolean>(false)
+    const { isFirstRender, setIsFirstRender } = useFirstCartRender()
+    const { latestItems, setLatestModifiedItems } = useLatestItems();
+    const { totalAmount, setTotalAmount }: { totalAmount: number, setTotalAmount: React.Dispatch<React.SetStateAction<number>> } = useTotalAmount()
     const imageUrl = "/images/productImages/" + image;
 
     const dropDownArr = []
@@ -47,33 +57,49 @@ function CartItem({ id, quantity, title, price, image, description, category, ra
 
 
     const increaseQuantity = () => {
-        setNoOfItemsSelected(prev => prev + 1)
+        // setNoOfItemsSelected(prev => prev + 1)
+        setTotalAmount(prev => prev + Math.floor(price * 80))
+       
+        setLatestModifiedItems({...latestItems,[productId]:latestItems[productId]+1})
+        console.log(latestItems)
+
     }
 
     const decreaseQuantity = () => {
-        if (noItemsSelected == 1) {
+        if (latestItems[productId] == 1) {
             // handleDelete();
             return
         }
-        setNoOfItemsSelected(prev => prev - 1);
+        // setNoOfItemsSelected(prev => prev - 1);
+        setTotalAmount(prev => prev - Math.floor(price * 80))
+        const newQuantity= latestItems.id-1
+        setLatestModifiedItems({...latestItems,[productId]:latestItems[productId]-1})
     }
 
     async function handleDelete() {
-        // const result = await prismadb.cartItem.delete({
-        //     where: {
-        //         id: id
-        //     }
-        // })
-        // console.log(result);
+
 
         const result = await axios.post("api/deletecartitem", { id: id })
         console.log(result)
         const mutatedResult = await mutate();
-        console.log(mutate)
+        // setIsFirstRender(true)
+        // console.log(mutate)
+        const newList= latestItems
+        delete newList[id]
+        console.log(newList,"total before deleting",Math.floor(price*80*latestItems[id]),latestItems[id])
+
+        setTotalAmount(prev =>prev - Math.floor(price*80*latestItems[productId]))
+        setLatestModifiedItems({...newList})
     }
 
 
     function handleSelected() {
+        if (isSelected) {
+            setTotalAmount(prev => prev - Math.floor(price * 80 * latestItems[productId]))
+        } else {
+            setTotalAmount(prev => prev + Math.floor(price * 80 * latestItems[productId]))
+
+        }
         SetIsSelected(prev => !prev)
     }
 
@@ -96,9 +122,9 @@ function CartItem({ id, quantity, title, price, image, description, category, ra
 
                             <Image width={140} height={140} src={imageUrl} alt="no image" />
                             <div className='bg-slate-100  flex justify-between my-2 rounded-lg text-2xl  font-semibold border-2 border-cyan-500'>
-                                <button onClick={decreaseQuantity} className=' w-1/3 py-1 text-cyan-500 border-2 border-r-cyan-500 rounded-l-lg active:bg-gray-400 text-center bg-gray-200 transition duration-50'>
-                                    {noItemsSelected === 1 ? <RiDeleteBinLine className='m-auto' /> : "-"}</button><span className='py-1'>{noItemsSelected}</span>
-                                <button onClick={increaseQuantity} className='w-1/3 py-1  text-cyan-500 border-l-cyan-500 border-2 rounded-r-lg active:bg-gray-400 bg-gray-200 transition duration-50'>+</button>
+                                <button disabled={!isSelected} onClick={decreaseQuantity} className= ' w-1/3 py-1 text-cyan-500 border-2 border-r-cyan-500 rounded-l-lg active:bg-gray-400 text-center bg-gray-200 transition duration-50'>
+                                    {latestItems[productId] === 1 ? <RiDeleteBinLine className='m-auto' /> : "-"}</button><span className='py-1'>{latestItems[productId]}</span>
+                                <button disabled={!isSelected} onClick={increaseQuantity} className='w-1/3 py-1  text-cyan-500 border-l-cyan-500 border-2 rounded-r-lg active:bg-gray-400 bg-gray-200 transition duration-50'>+</button>
                             </div>
                         </div>
                     </div>
@@ -118,7 +144,7 @@ function CartItem({ id, quantity, title, price, image, description, category, ra
 
                         <div className=' flex gap-3 text-lg font-medium'>
                             <button className='p-2 hover:underline text-cyan-700' onClick={handleDelete}>delete</button>
-                            {quantity !== noItemsSelected && <button className='text-cyan-700 bg-yellow-400 p-2 rounded-lg hover:underline active:ring-1'>update</button>}
+                            {quantity !== latestItems[productId] && <button className='text-cyan-700 bg-yellow-400 p-2 rounded-lg hover:underline active:ring-1'>update</button>}
                         </div>
                     </div>
 
