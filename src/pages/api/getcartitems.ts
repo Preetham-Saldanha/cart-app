@@ -25,7 +25,7 @@ try {
     if (!currentUser) {
         throw new Error('Not signed in');
     }
-    console.log("user",currentUser)
+    // console.log("user",currentUser)
 
     
          items = await prismadb.cartItem.findMany({

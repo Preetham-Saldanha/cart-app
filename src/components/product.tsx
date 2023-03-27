@@ -8,7 +8,8 @@ import { useEffect } from 'react'
 import useFirstCartRender from "@/hooks/useFirstCartRender"
 import useLatestItems from "@/hooks/useLatestItems"
 import useTotalAmount from "@/hooks/useTotalAmount";
-
+import useCustomModal from "@/hooks/useCustomModal";
+import { useRouter } from 'next/router';
 
 type ProductType = {
     id: string,
@@ -18,10 +19,11 @@ type ProductType = {
     category: string | null,
     image: string,
     rating: {
-      rate: number,
-      count: number
+        rate: number,
+        count: number
     }
-  }
+    fire: ()=>Promise<boolean>
+}
 
 // address
 // : 
@@ -51,30 +53,35 @@ type ProductType = {
 // : 
 // "2023-03-12T19:20:48.420Z"
 
-function Product({ id, title, price, description, category, image, rating: { rate, count } }: ProductType) {
+function Product({ id, title, price, description, category, image, rating: { rate, count }, fire }: ProductType) {
 
-
+    const router = useRouter()
     const { data: user } = useCurrentUser();
     const { isFirstRender, setIsFirstRender } = useFirstCartRender()
     const { latestItems, setLatestModifiedItems } = useLatestItems();
-    const { totalAmount, setTotalAmount } : { totalAmount: number, setTotalAmount: React.Dispatch<React.SetStateAction<number>> } = useTotalAmount();
-
-    console.log("userId",user?.id)
+    const { totalAmount, setTotalAmount }: { totalAmount: number, setTotalAmount: React.Dispatch<React.SetStateAction<number>> } = useTotalAmount();
+    
+    console.log("userId", user?.id)
 
     const addToCart = async () => {
         try {
 
             const result = await axios.post("/api/addtocart", { productId: id, userId: user.id, quantity: 1, title, price, description, category, image, rate, count })
-            console.log("product added to cart",result)
+            console.log("product added to cart", result)
 
-            if(result.data ===null){
+            if (result.data === null) {
                 //display modal to OKAY or move to cart
-               return
+                const userInput = await fire();
+                if (!userInput) {
+                    router.push("/cart")
+                    console.log("router was hit")
+                }
+                return
             }
-            console.log({...latestItems,[id]:1})
-            setLatestModifiedItems({...latestItems,[id]:1})
-            setTotalAmount(prev=>prev+Math.floor(price*80))
-            
+            console.log({ ...latestItems, [id]: 1 })
+            setLatestModifiedItems({ ...latestItems, [id]: 1 })
+            setTotalAmount(prev => prev + Math.floor(price * 80))
+
             // setIsFirstRender(true)
         }
         catch (error) {
@@ -113,22 +120,27 @@ function Product({ id, title, price, description, category, image, rating: { rat
     //     }
     // }, [])
 
-    const imageUrl= "/images/productImages/" + image;
+    const imageUrl = "/images/productImages/" + image;
 
     return (
-        <div className='flex flex-col  px-5  m-5 bg-white py-4 rounded-md'>
-            <p className='w-full text-right font-semibold text-gray-500'>{category}</p>
-            <div className='m-auto h-5/12'>  <Image src={imageUrl} height={200} width={200} alt={"non empty"} /></div>
+        <>
+        
+        {/* <Modal message='Product is already selected in Cart' confirmButtonText='Ok' cancelButtonText='Move to cart' /> */}
+            <div className='flex flex-col  px-5  m-5 bg-white py-4 rounded-md'>
+                <p className='w-full text-right font-semibold text-gray-500'>{category}</p>
+                <div className='m-auto h-5/12'>  <Image src={imageUrl} height={200} width={200} alt={"non empty"} /></div>
 
-            <div className=''>
-                <p className='font-bold text-lg my-2'>{title}</p>
-                <p className='flex items-center text-blue-700 font-semibold my-2'> {rate}<span className='flex text-pink-600 '>{stars.map(star => star)} </span>{count}</p>
-                <p className='  line-clamp-2 font-medium my-2'>{description}</p>
-                <p className='font-semibold text-xl my-2'>₹{Math.floor(price * 80)}/-</p>
-                <button onClick={addToCart} className="p-3 rounded-md font-semibold w-full text-xl m-auto bg-cyan-500  active:bg-gradient-to-b  active:from-cyan-600 active:to-cyan-500 transition duration-150 active:ring-2">Add to Cart</button>
+                <div className=''>
+                    <p className='font-bold text-lg my-2'>{title}</p>
+                    <p className='flex items-center text-blue-700 font-semibold my-2'> {rate}<span className='flex text-pink-600 '>{stars.map(star => star)} </span>{count}</p>
+                    <p className='  line-clamp-2 font-medium my-2'>{description}</p>
+                    <p className='font-semibold text-xl my-2'>₹{Math.floor(price * 80)}/-</p>
+                    <button onClick={addToCart} className="p-3 rounded-md font-semibold w-full text-xl m-auto bg-cyan-500  active:bg-gradient-to-b  active:from-cyan-600 active:to-cyan-500 transition duration-150 active:ring-2">Add to Cart</button>
 
+                </div>
             </div>
-        </div>
+            
+        </>
     )
 }
 

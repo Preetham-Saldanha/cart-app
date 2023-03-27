@@ -11,7 +11,17 @@ import useSWR from 'swr'
 import fetcher from '@/lib/fetcher';
 import useTotalAmount from "@/hooks/useTotalAmount";
 import useFirstCartRender from "@/hooks/useFirstCartRender"
-import useLatestItems from "@/hooks/useLatestItems"
+import useLatestItems from "@/hooks/useLatestItems";
+
+// import {
+//   PaymentElement,
+//   LinkAuthenticationElement,
+//   useStripe,
+//   useElements
+// } from "@stripe/react-stripe-js";
+
+import {loadStripe} from '@stripe/stripe-js';
+
 
 type CartItem = {
   id: string, quantity: number,
@@ -65,11 +75,12 @@ function Cart() {
   return (
 
     <Layout>
-      <div className='bg-gray-300 min-h-screen'>
+      <div className=' relative bg-gray-300 min-h-screen'>
         <div className='flex  w-10/12 m-auto gap-5  p-8 '>
           <CartContainer  isLoading={isLoading} items={data?.items} mutate={mutate}/>
           <TotalCostContainer noOfItems={data?.items?.length} isLoading={isLoading}/>
         </div>
+        
       </div>
     </Layout>
   )
