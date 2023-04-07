@@ -4,6 +4,7 @@ import Product from './product';
 import useCustomModal from "@/hooks/useCustomModal";
 
 
+
 type ProductType = {
     id: string,
     title: string,
@@ -22,9 +23,8 @@ function ProductFeed({ products }: { products: ProductType[] }) {
     const { Modal, fire }  = useCustomModal();
 
     return (
-        <>
-            
-            <Modal message='Product is already selected in Cart' confirmButtonText='Ok' cancelButtonText='Move to cart' />
+        <>   
+            <Modal    />
             <div className='relative grid grid-flow-dense md:grid-cols-2 lg:grid-cols-3 md:-mt-32 z-30 w-5/6 m-auto'>
 
                 {products?.map(product =>

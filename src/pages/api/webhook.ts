@@ -107,7 +107,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             console.log("goood luck", session)
 
 
-            return fullfillorder(session).then(() => res.status(200)).catch(err => res.status(400).send(`Webhook error: ${err.message}`));
+            return fullfillorder(session).then((ans) => { console.log(ans,"new payment"); return res.status(200)}).catch(err => res.status(400).send(`Webhook error: ${err.message}`));
         }
         // return res.status(200).send("")
 

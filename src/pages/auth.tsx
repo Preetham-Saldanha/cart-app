@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 
 import Myinput from "@/components/myInput";
 import axios from "axios";
-import { signIn } from "next-auth/react";
+import { signIn  } from "next-auth/react";
 import { useRouter } from "next/router";
 
 import { FcGoogle } from "react-icons/fc";

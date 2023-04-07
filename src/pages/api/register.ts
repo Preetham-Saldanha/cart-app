@@ -1,7 +1,5 @@
 import bcrypt from 'bcrypt';
 
-import {PrismaClient } from "prisma/prisma-client"
-
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import prismadb from "@/lib/prismadb";

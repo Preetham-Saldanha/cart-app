@@ -1,19 +1,36 @@
-import React,{useState,useEffect, useRef } from 'react'
+import React,{useState,useEffect, useRef, useCallback } from 'react'
 
 function Banner() {
 
     const listRef = useRef<HTMLUListElement | null>(null);
+    const observer= useRef<IntersectionObserver>();
 
-    const scrollCarousal = async (index: number) => {
+
+
+    const scrollCarousal = useCallback( async (index: number) => {
+      console.log(index,"inside sc func")
       const listNode = listRef.current;
+    //create observer ony if not initially created 
+  
+       
+      observer.current= new IntersectionObserver(entries=>{
+        if(entries[0].intersectionRatio===1){
+          const imgNode = listNode?.querySelectorAll('img')[index];
+      
+          imgNode?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center'
+          });
+        }
+      })
+
+      if(listNode!==null)observer.current.observe(listNode)
+
+    
       // This line assumes a particular DOM structure:
-      const imgNode = listNode?.querySelectorAll('img')[index];
-      imgNode?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center'
-      });
-    }
+    
+    },[])
   
    useEffect (() => {
       var item = 0;
@@ -21,6 +38,7 @@ function Banner() {
       const Id = setInterval(() => {
   
         console.log(item)
+        
         scrollCarousal(item);
         if (item == 5) item = -1;
         item++;
@@ -30,6 +48,7 @@ function Banner() {
   
       return () => {
         clearInterval(Id)
+        if(observer.current) observer.current.disconnect()
       }
     }, [])
 

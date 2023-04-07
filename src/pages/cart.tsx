@@ -1,5 +1,5 @@
 import CartContainer from '@/components/cartContainer';
-import CartItem from '@/components/cartItem';
+// import CartItem from '@/components/cartItem';
 import Layout from '@/components/layout'
 import TotalCostContainer from '@/components/totalCostContainer';
 import useCurrentUser from '@/hooks/useCurrentUser'

@@ -22,7 +22,7 @@ type ProductType = {
         rate: number,
         count: number
     }
-    fire: ()=>Promise<boolean>
+    fire: (message:string, confirmButtonText:string, cancelButtonText:string)=>Promise<boolean>
 }
 
 // address
@@ -64,6 +64,10 @@ function Product({ id, title, price, description, category, image, rating: { rat
     console.log("userId", user?.id)
 
     const addToCart = async () => {
+        // const userInput = await fire("Do you want to select this product?","Yes","No");
+        // if(!userInput){
+        //     return
+        // }
         try {
 
             const result = await axios.post("/api/addtocart", { productId: id, userId: user.id, quantity: 1, title, price, description, category, image, rate, count })
@@ -71,7 +75,7 @@ function Product({ id, title, price, description, category, image, rating: { rat
 
             if (result.data === null) {
                 //display modal to OKAY or move to cart
-                const userInput = await fire();
+                const userInput = await fire("Product is already selected in Cart","Ok","Move to cart");
                 if (!userInput) {
                     router.push("/cart")
                     console.log("router was hit")
@@ -135,7 +139,7 @@ function Product({ id, title, price, description, category, image, rating: { rat
                     <p className='flex items-center text-blue-700 font-semibold my-2'> {rate}<span className='flex text-pink-600 '>{stars.map(star => star)} </span>{count}</p>
                     <p className='  line-clamp-2 font-medium my-2'>{description}</p>
                     <p className='font-semibold text-xl my-2'>₹{Math.floor(price * 80)}/-</p>
-                    <button onClick={addToCart} className="p-3 rounded-md font-semibold w-full text-xl m-auto bg-cyan-500  active:bg-gradient-to-b  active:from-cyan-600 active:to-cyan-500 transition duration-150 active:ring-2">Add to Cart</button>
+                    <button onClick={addToCart} className="p-3 rounded-md font-semibold w-full text-xl m-auto bg-cyan-500  active:bg-gradient-to-b  active:from-cyan-600 active:to-cyan-500 transition duration-150 active:ring-1">Add to Cart</button>
 
                 </div>
             </div>
