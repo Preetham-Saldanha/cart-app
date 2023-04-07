@@ -7,6 +7,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const { items, email } = req.body
     const itemsDetailArr = [];
+    const itemsMetadata = [];
     for (const id of Object.keys(items)) {
         const individualItem = await prismadb.product.findFirst({
             where: {
@@ -15,7 +16,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         })
         // console.log(individualItem)
         itemsDetailArr.push(individualItem)
-
+        itemsMetadata.push({ [id]: items[id] })
         // https://localhost:3000/public/images/productImages/51UDEzMJVpL._AC_UL640_QL65_ML3_.jpg
     }
 
@@ -47,12 +48,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         cancel_url: `${process.env.HOST}/cart`,
         metadata: {
             email,
+            items: JSON.stringify(itemsMetadata)
             // images: JSON.stringify(itemsDetailArr.map(item=>imageInitialString+item?.image)),
         }
     })
 
     // console.log(items, email)
-    console.log("session", session.id)
+    // console.log("session", session.id)
 
     res.status(200).json({ id: session.id })
 }

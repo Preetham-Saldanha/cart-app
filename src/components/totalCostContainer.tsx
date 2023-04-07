@@ -47,9 +47,8 @@ function TotalCostContainer({ noOfItems, isLoading }: { noOfItems: number, isLoa
                 <HiCheckCircle size={22} className="text-cyan-700" />
                 <div> <p className='text-cyan-700 '> Your order is eligible for FREE Delivery. </p>
                     <p>Select this option at checkout.</p></div>
-
-
             </div>
+            
             <div>
                 <p className='text-xl '>Subtotal ({noOfItems} items): <span className='font-medium'>₹{totalAmount}</span></p>
                 <p className='flex gap-2'> <button onClick={handleGift}> {hasGift ? <ImCheckboxChecked size={15} className="text-blue-600" /> : <ImCheckboxUnchecked size={15} />}</button> This order contains a gift</p>

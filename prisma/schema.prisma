@@ -73,10 +73,10 @@ model Product {
   category    String?
 
   cartItem CartItem[]
-  Order    Order[]
 
-  rating Rating @relation(fields: [ratingId], references: [id])
-  ratingId String @db.ObjectId
+  rating    Rating      @relation(fields: [ratingId], references: [id])
+  ratingId  String      @db.ObjectId
+  OrderItem OrderItem[]
 }
 
 model Rating {
@@ -89,13 +89,23 @@ model Rating {
 }
 
 model Order {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  productId String   @db.ObjectId
-  product   Product  @relation(fields: [productId], references: [id])
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  email             String
+  amount            Int
+  // itemsDetail       String
+  status            String
+  createdAt         DateTime    @default(now())
+  checkout_event_id String
+  orderItems         OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @db.ObjectId
   quantity  Int
-  status    String
-  createdAt DateTime
 }
 
 model CartItem {
