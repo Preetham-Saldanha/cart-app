@@ -61,7 +61,7 @@ function Product({ id, title, price, description, category, image, rating: { rat
     const { latestItems, setLatestModifiedItems } = useLatestItems();
     const { totalAmount, setTotalAmount }: { totalAmount: number, setTotalAmount: React.Dispatch<React.SetStateAction<number>> } = useTotalAmount();
     
-    console.log("userId", user?.id)
+    // console.log("userId", user?.id)
 
     const addToCart = async () => {
         // const userInput = await fire("Do you want to select this product?","Yes","No");

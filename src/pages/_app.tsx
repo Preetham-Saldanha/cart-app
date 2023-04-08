@@ -3,6 +3,8 @@ import type { AppProps } from 'next/app'
 import { TotalAmountProvider } from '@/contexts/totalAmountContext'
 import { IsFirstCartRenderProvider } from '@/contexts/IsFirstCartRender'
 import { LatestItemsContextProvider } from '@/contexts/latestItems'
+import { FilteredProductsProvider } from '@/contexts/filteredProducts'
+import { SearchQueryProvider } from '@/contexts/searchQuery'
 
 
 
@@ -10,12 +12,15 @@ import { LatestItemsContextProvider } from '@/contexts/latestItems'
 export default function App({ Component, pageProps }: AppProps) {
 
 
-  return<LatestItemsContextProvider>
-   <IsFirstCartRenderProvider>
-    <TotalAmountProvider>
-      <Component {...pageProps} />
-    </TotalAmountProvider>
-  </IsFirstCartRenderProvider>
-  </LatestItemsContextProvider>
-
+  return <FilteredProductsProvider>
+    <SearchQueryProvider>
+      <LatestItemsContextProvider>
+        <IsFirstCartRenderProvider>
+          <TotalAmountProvider>
+            <Component {...pageProps} />
+          </TotalAmountProvider>
+        </IsFirstCartRenderProvider>
+      </LatestItemsContextProvider>
+    </SearchQueryProvider>
+  </FilteredProductsProvider>
 }

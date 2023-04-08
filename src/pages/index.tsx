@@ -7,14 +7,27 @@ import { getSession, signOut } from 'next-auth/react'
 import { NextPageContext } from 'next'
 import useCurrentUser from '@/hooks/useCurrentUser'
 import Layout from '@/components/layout'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Banner from '@/components/banner'
 import ProductFeed from '@/components/productFeed'
 import prismadb from '../lib/prismadb'
+import useFilteredProducts from"@/hooks/useFilteredProducts"
 
 const inter = Inter({ subsets: ['latin'] })
 
-type ProductType = {
+// const result = await prisma.user.findMany({
+//   where: {
+//     OR: [
+//       {
+//         email: {
+//           endsWith: 'prisma.io',
+//         },
+//       },
+//       { email: { endsWith: 'gmail.com' } },
+//     ], }
+//   })
+
+export type ProductType = {
   id: string,
   title: string,
   price: number,
@@ -26,7 +39,7 @@ type ProductType = {
     count: number
   }
 }
-type RatingType = {
+export type RatingType = {
   rate: number,
   count: number
 }
@@ -43,7 +56,7 @@ export async function getServerSideProps(context: NextPageContext) {
     }
   }
 
-  let products: (ProductType & { rating: RatingType; })[] = []
+  let products: (ProductType & { rating: RatingType })[] = []
   try {
     // products = await fetch('https://fakestoreapi.com/products').then(res => res.json())
     // const data = await fetch('https://api.storerestapi.com/products')
@@ -61,13 +74,14 @@ export async function getServerSideProps(context: NextPageContext) {
     }
   }
 
- 
+
 }
 
 export default function Home({ products }: { products: ProductType[] }) {
 
   const { data: user } = useCurrentUser();
 
+  const {filteredProducts, setFilteredProducts, query } = useFilteredProducts();
 
 
   return (
@@ -87,7 +101,7 @@ export default function Home({ products }: { products: ProductType[] }) {
           </div> */}
           <div className='bg-gray-200 min-h-screen'>
             <Banner />
-            <ProductFeed products={products} />
+            <ProductFeed products={query===""?products:filteredProducts} />
           </div>
         </Layout>
       </main>
