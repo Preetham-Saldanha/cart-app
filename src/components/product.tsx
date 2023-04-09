@@ -97,13 +97,13 @@ function Product({ id, title, price, description, category, image, rating: { rat
     let stars = [];
     let approxRate = Math.floor(rate)
     for (var i = 1; i <= approxRate; i++) {
-        stars.push(<BsStarFill />);
+        stars.push(<BsStarFill key={i}/>);
     }
 
-    if (rate > approxRate) stars.push(<BsStarHalf />);
+    if (rate > approxRate) stars.push(<BsStarHalf key={stars.length+1}/>);
 
     for (var i = stars.length; i < 5; i++) {
-        stars.push(<BsStar />);
+        stars.push(<BsStar key={i+1} />);
     }
 
 
