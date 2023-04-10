@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { Popover, ArrowContainer } from 'react-tiny-popover';
 
-import { signOut } from "next-auth/react";
+// import { signOut } from "next-auth/react";
 import SearchBar from "./searchBar";
 
 const Navbar: React.FC = () => {
@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
 
                 {/* <div onClick={() => setIsShowLogButton(prev => !prev)} className="flex flex-col items-center text-zinc-400 text-2xl font-semibold hover:text-zinc-200 hover:cursor-pointer transition duration-150" > */}
                 <SearchBar />
-                <div onClick={() => signOut()} className="flex flex-col items-center text-zinc-400 text-2xl font-semibold hover:text-zinc-200 hover:cursor-pointer transition duration-150" >
+                <div onClick={() => { router.push({ pathname: "/profile" }) }} className="flex flex-col items-center text-zinc-400 text-2xl font-semibold hover:text-zinc-200 hover:cursor-pointer transition duration-150 border-pink-500" style={activeRoute === "/profile" ? { borderBottomWidth: "4px", color: "aqua" } : {}} >
                    
                     <BiUserCircle size={60} className="" />
                     <p>Profile</p>

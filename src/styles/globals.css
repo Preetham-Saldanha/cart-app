@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer components {
+    .profile_form_field {
+      @apply rounded-md shadow-md w-full p-2 text-lg outline-none border border-cyan-700 mb-2;
+    }
+
+}
